@@ -1,0 +1,23 @@
+.Name{
+    margin-top: 10px;
+    margin-left: 20px;
+}
+.User{
+    margin-left: 1600px;
+
+}
+.BoxInventory{
+
+    margin-top: 2000px ;
+
+
+}
+.BoxSales{
+
+    margin-top: 2000px ;
+
+
+}
+body{
+    overflow: hidden;
+}
