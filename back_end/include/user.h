@@ -8,20 +8,16 @@
 using namespace std;
 
 class user {
+public:
 
- public:
-    user(string, string, string );
-    string getName();
-    bool vertifyLogin();
-
- private:
+    virtual bool vertifyLogin() = 0;
+    virtual bool changePassword() = 0;
+    virtual ~user() = default;
+protected:
     string username;
     string password;
     string type;
-
-
 };
-
 
 
 #endif //USER_H

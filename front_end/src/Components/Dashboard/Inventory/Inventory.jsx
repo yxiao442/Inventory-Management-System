@@ -22,8 +22,9 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import './Inventory.css'
-function createData(name, category, id, quantity, price, totalValue) {
+function createData(name, category, id, quantity, price, totalValue,lowStock) {
     return {
         name,
         category,
@@ -31,6 +32,7 @@ function createData(name, category, id, quantity, price, totalValue) {
         quantity,
         price,
         totalValue,
+        lowStock,
     };
 }
 
@@ -233,6 +235,7 @@ export default function EnhancedTable({ data }) {
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [visable,setVisable] = React.useState(false);
     // useEffect(() => {
     //
     //     console.log('Received data:', data);
@@ -246,9 +249,17 @@ export default function EnhancedTable({ data }) {
     //     (item.stock*item.price).toFixed(2),
     // ));
     const rows = React.useMemo(
-        () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.stock, item.price, (item.stock * item.price).toFixed(2))) : [],
+
+        () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.stock, item.price, (item.stock * item.price).toFixed(2),item.lowStock === "Yes")) : [],
         [data]
     );
+    // useEffect(() => {
+    //     // Check if there’s any item with lowStock set to "yes"
+    //     const hasLowStock = data.some((item) => item.lowStock === "Yes");
+    //     console.log(hasLowStock);
+    //     setVisable(hasLowStock);
+    //
+    // }, [data]);
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -329,6 +340,7 @@ export default function EnhancedTable({ data }) {
                             rowCount={rows.length}
                         />
                         <TableBody>
+
                             {visibleRows.map((row, index) => {
                                 const isItemSelected = selected.includes(row.id);
                                 const labelId = `enhanced-table-checkbox-${index}`;
@@ -352,7 +364,9 @@ export default function EnhancedTable({ data }) {
                                             scope="row"
                                             padding="none"
                                         >
+                                            {row.lowStock&&<PriorityHighIcon sx={{ color: 'red',ml:-3}} />}
                                             {row.name}
+
                                         </TableCell>
                                         <TableCell align="left">{row.category}</TableCell>
                                         <TableCell align="left">{row.id}</TableCell>
@@ -389,6 +403,7 @@ export default function EnhancedTable({ data }) {
             {/*    control={<Switch checked={dense} onChange={handleChangeDense} />}*/}
             {/*    label="Dense padding"*/}
             {/*/>*/}
+
         </Box>
     );
 }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState,useEffect  } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -41,13 +41,19 @@ function Dashboard() {
     const [showSales, setShowSales] = useState(false);
     const [showPurchase, setShowPurchase] = useState(false);
     const [inventoryData, setInventoryData] = useState([]);
+    const [purchaseVisible,setVisible] = useState(false);
+    const message = location.state?.message;
+    useEffect(() => {
+        if (message === 'Manager') {
+            setVisible(true);
+        }
+    }, [message]);  // Runs when `message` changes
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     };
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
-
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     };
@@ -70,6 +76,7 @@ function Dashboard() {
 
     };
     const handlePurchase = () => {
+
         setShowPurchase(true);
         setShowInventory(false);
         setShowSales(false);
@@ -167,7 +174,8 @@ function Dashboard() {
                             </ListItemButton>
 
                         </ListItem>
-                        <ListItem key="Purchases" disablePadding>
+
+                        { purchaseVisible && (<ListItem key="Purchases" disablePadding>
                             <ListItemButton onClick={() =>{
                                 handlePurchase();
                                 getInventory();
@@ -178,7 +186,7 @@ function Dashboard() {
                                 <ListItemText primary="Purchases"/>
                             </ListItemButton>
 
-                        </ListItem>
+                        </ListItem>)}
                         <ListItem key="Reports" disablePadding>
                             <ListItemButton>
                                 <ListItemIcon>

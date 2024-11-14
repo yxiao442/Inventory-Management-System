@@ -46,6 +46,22 @@
     color: #fff;
     padding: 20px 45px 20px 20px;
 }
+.styled-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.styled-input:hover {
+    border-color: #bbb;
+}
+
 .inputBox input::placeholder{
     color: #fff;
 
