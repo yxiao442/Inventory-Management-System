@@ -250,7 +250,7 @@ export default function EnhancedTable({ data }) {
     const [newInventoryName, setNewInventoryName]=React.useState('');
     const [newInventoryCategory, setNewInventoryCategory]=React.useState('');
     const [newInventoryPrice, setNewInventoryPrice]=React.useState('');
-    const [createSuccess, setCreateSuccess]=React.useState('')
+    const [createSuccess, setCreateSuccess]=React.useState('');
     const rows = React.useMemo(
 
         () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.stock, item.price, (item.stock * item.price).toFixed(2),item.lowStock === "Yes")) : [],
@@ -279,9 +279,10 @@ export default function EnhancedTable({ data }) {
     const handleClose = () => {
 
         setNewInventory(false);
-        setNewInventoryName('')
-        setNewInventoryCategory('')
+        setNewInventoryName('');
+        setNewInventoryCategory('');
         setNewInventoryPrice('')
+        setCreateSuccess('');
 
     };
     const handleChangeCategory = (event) => {

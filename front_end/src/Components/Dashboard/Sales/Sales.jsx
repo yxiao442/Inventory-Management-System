@@ -35,11 +35,12 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-function createData(name, category, id,  price, totalValue) {
+function createData(name, category, id, quantity ,price, totalValue) {
     return {
         name,
         category,
         id,
+        quantity,
         price,
         totalValue,
     };
@@ -252,10 +253,11 @@ export default function EnhancedTable({ data }) {
     const [dataFromChild, setDataFromChild] = useState("");
     const [sales, setSales] = React.useState(false);
     const [selectedRow, setSelectedRow] = React.useState(null);
+    const [saleSuccess, setSalesSuccess] = React.useState('');
     // const quantityRef = useRef();
     // console.log(quantityRef)
     const rows = React.useMemo(
-        () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.price, (item.stock * item.price).toFixed(2))) : [],
+        () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID,item.stock ,item.price, (item.stock * item.price).toFixed(2))) : [],
         [data]
     );
     const handleRequestSort = (event, property) => {
@@ -274,7 +276,8 @@ export default function EnhancedTable({ data }) {
     };
     const handleCloseSales =()=>{
       setSales(false);
-        setSelectedRow(null);
+      setSelectedRow(null);
+      setSalesSuccess('')
 
     };
     function handleDataFromChild(data) {
@@ -286,24 +289,49 @@ export default function EnhancedTable({ data }) {
         setSales(true);
     };
 
-    // const handleClick = (event, id) => {
-    //     const selectedIndex = selected.indexOf(id);
-    //     let newSelected = [];
-    //
-    //     if (selectedIndex === -1) {
-    //         newSelected = newSelected.concat(selected, id);
-    //     } else if (selectedIndex === 0) {
-    //         newSelected = newSelected.concat(selected.slice(1));
-    //     } else if (selectedIndex === selected.length - 1) {
-    //         newSelected = newSelected.concat(selected.slice(0, -1));
-    //     } else if (selectedIndex > 0) {
-    //         newSelected = newSelected.concat(
-    //             selected.slice(0, selectedIndex),
-    //             selected.slice(selectedIndex + 1),
-    //         );
-    //     }
-    //     setSelected(newSelected);
-    // };
+    const handleSales = async (e) => {
+        e.preventDefault();
+        if(selectedRow.quantity ==='0'){
+            setSalesSuccess('The item stock is 0, and not be sale');
+        }
+        else {
+            const salesData = {
+                Product_Name: selectedRow.name,
+                Product_Category: selectedRow.category,
+                Product_ID: selectedRow.id,
+                Sales_Amount: dataFromChild
+            };
+
+
+
+            try {
+                const response = await fetch('http://localhost:18080/salesProduct', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(salesData),
+                });
+
+                const result = await response.json();
+
+                console.log('Response from backend:', result);
+
+                // Handle success or failure
+
+                if (response.ok) {
+                    // Handle successful login (e.g., redirect, show a success message)
+                    console.log('Sale Product successful!');
+                    setSalesSuccess("Sale Product successful!")
+
+                }
+            } catch (error) {
+                console.error('Error during create user:', error);
+            }
+        }
+
+    };
+
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -409,7 +437,7 @@ export default function EnhancedTable({ data }) {
                                                 {"Sales"}
                                             </DialogTitle>
                                             <DialogContent>{selectedRow &&(
-                                                <form>
+                                                <form onSubmit={handleSales}>
                                                     <div>
                                                         <h3 style={{ color: 'red' }}>Are you sure process this sales?</h3>
                                                <h4>Product Name: {selectedRow.name}</h4>
@@ -417,8 +445,9 @@ export default function EnhancedTable({ data }) {
                                                 <h4>Product ID: {selectedRow.id}</h4>
                                                 <h4>Sales Quantity: {dataFromChild}</h4>
                                                 <h4>Total Price: ${(selectedRow.price * dataFromChild).toFixed(2)}</h4>
-                                                        <Button variant="contained">Complete Sales
+                                                        <Button variant="contained" type="submit">Complete Sales
                                                             </Button>
+                                                        {saleSuccess && <p style={{ color: 'red' }}>{saleSuccess}</p>}
                                                     </div>
                                                 </form>
                                                 )
