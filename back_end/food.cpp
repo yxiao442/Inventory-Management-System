@@ -32,11 +32,13 @@ bool food::createItem() {
     }
 
     // Bind parameters
-    sqlite3_bind_text(stmt, 1, inventoryID.c_str(), -1, SQLITE_TRANSIENT); // Bind inventoryID
-    sqlite3_bind_text(stmt, 2, productName.c_str(), -1, SQLITE_TRANSIENT); // Bind productName
-    sqlite3_bind_text(stmt, 3, "Food", -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int(stmt, 4, quantity); // Bind quantity
-    sqlite3_bind_int(stmt, 5, price);
+    sqlite3_bind_text(stmt, 1, inventoryID.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, "Food", -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, productName.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 4, quantity);
+    sqlite3_bind_double(stmt, 5, price);
+
+    cout << price;
 
     // Execute SQL statement
     rc = sqlite3_step(stmt);
