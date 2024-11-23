@@ -9,6 +9,9 @@
 #include "crow/middlewares/cors.h"
 #include "employee.h"
 #include "manager.h"
+#include "product.h"
+#include "foodFactory.h"
+
 using namespace std;
 
 
@@ -159,6 +162,38 @@ int main() {
         vector_of_wvalue.clear();
         return res;
     });
+
+
+    CROW_ROUTE(app,"/createProduct").methods("POST"_method)([](const crow::request &req){
+        auto body = crow::json::load(req.body);
+        auto productName = body["Product_Name"].s();
+        auto category = body["Product_Category"].s();
+        auto price_str = body["Product_Price"].s();
+        float price = std::stof(price_str);
+        auto productID = body["Product_ID"].s();
+
+        productFactory* factory = nullptr;
+
+        if(category == "Food") {
+            factory = new foodFactory();
+        }
+
+        product* newProduct = factory -> generateItem(productName, price, productID);
+        if (newProduct -> createItem()){
+            crow::json::wvalue response_json;
+            response_json["message"] = "Create successfully";
+            crow::response res(200, response_json);
+            return res;
+        } else{
+            crow::json::wvalue response_json;
+            response_json["message"] = "Create Failed";
+            crow::response res(404, response_json);
+            return res;
+        }
+
+    });
+
+
 
 
     app.port(18080).multithreaded().run();
