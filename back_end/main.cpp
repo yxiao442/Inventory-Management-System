@@ -189,13 +189,19 @@ int main() {
             crow::json::wvalue response_json;
             response_json["message"] = "Create successfully";
             crow::response res(200, response_json);
+            delete newProduct;
+            delete factory;
+
             return res;
         } else{
             crow::json::wvalue response_json;
             response_json["message"] = "Create Failed";
             crow::response res(404, response_json);
+            delete newProduct;
+            delete factory;
             return res;
         }
+
 
     });
 
@@ -223,17 +229,59 @@ int main() {
             crow::json::wvalue response_json;
             response_json["message"] = "Sales successfully";
             crow::response res(200, response_json);
+            delete newProduct;
+            delete factory;
             return res;
         } else{
             crow::json::wvalue response_json;
             response_json["message"] = "Sales Failed";
             crow::response res(404, response_json);
+            delete newProduct;
+            delete factory;
             return res;
         }
+
+
 
     });
 
 
+    CROW_ROUTE(app,"/purchaseProduct").methods("POST"_method)([](const crow::request &req){
+        auto body = crow::json::load(req.body);
+        auto productName = body["Product_Name"].s();
+        auto category = body["Product_Category"].s();
+        auto amount_str = body["Purchase_Amount"].s();
+        int amount = std::stoi(amount_str);
+        auto productID = body["Product_ID"].s();
+
+        productFactory* factory = nullptr;
+
+        if(category == "Food") {
+            factory = new foodFactory();
+        } else if(category == "Drink"){
+            factory = new drinkFactory();
+        } else if(category == "Fruit"){
+            factory = new fruitFactory();
+        }
+
+        product* newProduct = factory -> generateItem(productName, 0, productID);
+        if (newProduct -> addQuantity(amount)){
+            crow::json::wvalue response_json;
+            response_json["message"] = "Purchase successfully";
+            crow::response res(200, response_json);
+            delete newProduct;
+            delete factory;
+            return res;
+        } else{
+            crow::json::wvalue response_json;
+            response_json["message"] = "Purchase Failed";
+            crow::response res(404, response_json);
+            delete newProduct;
+            delete factory;
+            return res;
+        }
+
+    });
 
 
     app.port(18080).multithreaded().run();
