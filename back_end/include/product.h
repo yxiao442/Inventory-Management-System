@@ -15,7 +15,7 @@ private:
     string inventoryID;
     string productName;
     float price;
-    string category;
+//    string category;
 
 public:
     virtual bool createItem() = 0;

@@ -11,6 +11,8 @@
 #include "manager.h"
 #include "product.h"
 #include "foodFactory.h"
+#include "fruitFactory.h"
+#include "drinkFactory.h"
 
 using namespace std;
 
@@ -176,6 +178,10 @@ int main() {
 
         if(category == "Food") {
             factory = new foodFactory();
+        } else if(category == "Drink"){
+            factory = new drinkFactory();
+        } else if(category == "Fruit"){
+            factory = new fruitFactory();
         }
 
         product* newProduct = factory -> generateItem(productName, price, productID);

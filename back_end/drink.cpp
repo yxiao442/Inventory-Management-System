@@ -1,16 +1,16 @@
 //
-// Created by Mattie Poon on 2024-11-09.
+// Created by Mattie Poon on 2024-11-23.
 //
 
 #include <iostream>
-#include "food.h"
+#include "drink.h"
 #include "sqlite/sqlite3.h"
 
-food::food(const std::string& productName, float price, const std::string&inventoryID)
+drink::drink(const std::string& productName, float price, const std::string&inventoryID)
         : productName(productName), price(price), inventoryID(inventoryID) {}
 
-bool food::createItem() {
-    std::cout << "Generating food item: " << productName << std::endl;
+bool drink::createItem() {
+    std::cout << "Generating drink item: " << productName << std::endl;
 
     sqlite3* db;
     char* errMessage = nullptr;
@@ -33,7 +33,7 @@ bool food::createItem() {
 
     // Bind parameters
     sqlite3_bind_text(stmt, 1, inventoryID.c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, 2, "Food", -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, "Drink", -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 3, productName.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 4, 0);
     sqlite3_bind_double(stmt, 5, price);
@@ -52,11 +52,11 @@ bool food::createItem() {
     sqlite3_finalize(stmt);
     sqlite3_close(db);
 
-    std::cout << "Create new food item successfully.\n";
+    std::cout << "Create new drink item successfully.\n";
     return true;
 }
 
-bool food::addQuantity(int amount) {
+bool drink::addQuantity(int amount) {
 
     sqlite3* db;
     char* errMessage = nullptr;
@@ -108,7 +108,7 @@ bool food::addQuantity(int amount) {
 
 }
 
-bool food::deleteQuantity(int amount) {
+bool drink::deleteQuantity(int amount) {
 
     sqlite3* db;
     char* errMessage = nullptr;
@@ -158,4 +158,5 @@ bool food::deleteQuantity(int amount) {
     }
 
 }
+
 
