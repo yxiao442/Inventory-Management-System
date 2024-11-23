@@ -4,36 +4,44 @@ import { styled } from '@mui/system';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import './Number.css'
-
+import  { useState } from 'react';
 
 
 
 const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
     return (
         <BaseNumberInput className = "Input"
-            slots={{
-                root: StyledInputRoot,
-                input: StyledInput,
-                incrementButton: StyledButton,
-                decrementButton: StyledButton,
-            }}
-            slotProps={{
-                incrementButton: {
-                    children: <AddIcon fontSize="small" />,
-                    className: 'increment',
-                },
-                decrementButton: {
-                    children: <RemoveIcon fontSize="small" />,
-                },
-            }}
-            {...props}
-            ref={ref}
+                         slots={{
+                             root: StyledInputRoot,
+                             input: StyledInput,
+                             incrementButton: StyledButton,
+                             decrementButton: StyledButton,
+                         }}
+                         slotProps={{
+                             incrementButton: {
+                                 children: <AddIcon fontSize="small" />,
+                                 className: 'increment',
+                             },
+                             decrementButton: {
+                                 children: <RemoveIcon fontSize="small" />,
+                             },
+                         }}
+                         {...props}
+                         ref={ref}
         />
     );
 });
 
-export default function QuantityInput() {
-    return <NumberInput aria-label="Quantity Input" min={1} max={99} />;
+export default function QuantityInput({sendDataToParent}) {
+    const [value, setValue] = useState(1); // State to track the current value
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue); // Update the state with the new value
+        sendDataToParent(newValue);
+
+    };
+
+    return <NumberInput aria-label="Quantity Input" min={1} max={99}  onChange={handleChange}/>;
 }
 
 const blue = {

@@ -27,6 +27,12 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import './Purchase.css'
 import Number from './Number'
+import {useState} from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 
 function createData(name, category, id,  price, totalValue) {
     return {
@@ -109,6 +115,12 @@ const headCells = [
         numeric: true,
         disablePadding: false,
         label: 'Inventory Value($)',
+    },
+    {
+        id: 'button',
+        numeric: true,
+        disablePadding: false,
+
     },
 ];
 
@@ -202,16 +214,16 @@ function EnhancedTableToolbar(props) {
                 },
             ]}
         >
-            {numSelected > 0 ? (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {numSelected} selected
-                </Typography>
-            ) : (
+            {/*{numSelected > 0 ? (*/}
+            {/*    <Typography*/}
+            {/*        sx={{ flex: '1 1 100%' }}*/}
+            {/*        color="inherit"*/}
+            {/*        variant="subtitle1"*/}
+            {/*        component="div"*/}
+            {/*    >*/}
+            {/*        {numSelected} selected*/}
+            {/*    </Typography>*/}
+            {/*) : (*/}
                 <Typography
                     sx={{ flex: '1 1 100%' }}
                     variant="h6"
@@ -220,20 +232,20 @@ function EnhancedTableToolbar(props) {
                 >
                     Purchase
                 </Typography>
-            )}
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
+            {/*)}*/}
+            {/*{numSelected > 0 ? (*/}
+            {/*    <Tooltip title="Delete">*/}
+            {/*        <IconButton>*/}
+            {/*            <DeleteIcon />*/}
+            {/*        </IconButton>*/}
+            {/*    </Tooltip>*/}
+            {/*) : (*/}
+            {/*    <Tooltip title="Filter list">*/}
+            {/*        <IconButton>*/}
+            {/*            <FilterListIcon />*/}
+            {/*        </IconButton>*/}
+            {/*    </Tooltip>*/}
+            {/*)}*/}
         </Toolbar>
     );
 }
@@ -249,7 +261,9 @@ export default function EnhancedTable({ data }) {
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+    const [dataFromChild, setDataFromChild] = useState("");
+    const [purchase, setPurchase] = React.useState(false);
+    const [selectedRow, setSelectedRow] = React.useState(null);
     const rows = React.useMemo(
         () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.price, (item.stock * item.price).toFixed(2))) : [],
         [data]
@@ -268,25 +282,38 @@ export default function EnhancedTable({ data }) {
         }
         setSelected([]);
     };
+    const handleClosePurchase =()=>{
+        setPurchase(false);
+        setSelectedRow(null);
 
-    const handleClick = (event, id) => {
-        const selectedIndex = selected.indexOf(id);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-        setSelected(newSelected);
     };
+    function handleDataFromChild(data) {
+        setDataFromChild(data);
+    }
+    const handleOpenPurchase =(event,row)=>{
+        event.preventDefault();
+        setSelectedRow(row);
+        setPurchase(true);
+    };
+
+    // const handleClick = (event, id) => {
+    //     const selectedIndex = selected.indexOf(id);
+    //     let newSelected = [];
+    //
+    //     if (selectedIndex === -1) {
+    //         newSelected = newSelected.concat(selected, id);
+    //     } else if (selectedIndex === 0) {
+    //         newSelected = newSelected.concat(selected.slice(1));
+    //     } else if (selectedIndex === selected.length - 1) {
+    //         newSelected = newSelected.concat(selected.slice(0, -1));
+    //     } else if (selectedIndex > 0) {
+    //         newSelected = newSelected.concat(
+    //             selected.slice(0, selectedIndex),
+    //             selected.slice(selectedIndex + 1),
+    //         );
+    //     }
+    //     setSelected(newSelected);
+    // };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -339,8 +366,8 @@ export default function EnhancedTable({ data }) {
 
                                 return (
                                     <TableRow
-                                        hover
-                                        onClick={(event) => handleClick(event, row.id)}
+                                        // hover
+                                        // onClick={(event) => handleClick(event, row.id)}
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
@@ -363,10 +390,47 @@ export default function EnhancedTable({ data }) {
                                         </TableCell>
                                         <TableCell align="left">{row.category}</TableCell>
                                         <TableCell align="left">{row.id}</TableCell>
-                                        <TableCell align="right"><Number/></TableCell>
+                                        <TableCell align="right"><Number sendDataToParent={handleDataFromChild}/></TableCell>
                                         <TableCell align="left">{row.price}</TableCell>
                                         <TableCell align="left">{row.totalValue}</TableCell>
+                                        <TableCell><Button variant="contained" onClick={(event) => handleOpenPurchase(event, row)}>Purchase</Button></TableCell>
+                                        <Dialog open={purchase}
+                                                onClose={handleClosePurchase}
+                                                aria-labelledby="alert-dialog-title"
+                                                aria-describedby="alert-dialog-description"
+                                                maxWidth="sm"
+                                                fullWidth
+                                                keepMounted = {false}
+                                                PaperProps={{
+                                                    style:{
+                                                        height :'330px'
+                                                    },
+                                                }}
+                                                BackdropProps={{
+                                                    style: { backgroundColor: 'rgba(100, 100, 100, 100)' },
+                                                }}
+                                        >
 
+                                            <DialogTitle id="alert-dialog-title">
+                                                {"Sales"}
+                                            </DialogTitle>
+                                            <DialogContent>{selectedRow &&(
+                                                <form>
+                                                    <div>
+                                                        <h3 style={{ color: 'red' }}>Are you sure process this purchase?</h3>
+                                                        <h4>Product Name: {selectedRow.name}</h4>
+                                                        <h4>Product Category: {selectedRow.category}</h4>
+                                                        <h4>Product ID: {selectedRow.id}</h4>
+                                                        <h4>Purchase Quantity: {dataFromChild}</h4>
+                                                        <h4>Total Price: ${(selectedRow.price * dataFromChild).toFixed(2)}</h4>
+                                                        <Button variant="contained">Complete Purchase
+                                                        </Button>
+                                                    </div>
+                                                </form>
+                                            )
+                                            }
+                                            </DialogContent>
+                                        </Dialog>
 
                                     </TableRow>
                                 );
@@ -384,7 +448,7 @@ export default function EnhancedTable({ data }) {
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[5]}
                     component="div"
                     count={rows.length}
                     rowsPerPage={rowsPerPage}
@@ -393,10 +457,7 @@ export default function EnhancedTable({ data }) {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            <FormControlLabel
-                control={<Switch checked={dense} onChange={handleChangeDense} />}
-                label="Dense padding"
-            />
+
         </Box>
     );
 }

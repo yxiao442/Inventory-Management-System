@@ -29,7 +29,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import { FaBagShopping } from "react-icons/fa6";
 import { FaChartBar } from "react-icons/fa";
 import { useNavigate,useLocation } from 'react-router-dom';
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Logout'];
 const drawerWidth = 240;
 
 function Dashboard() {
@@ -54,9 +54,14 @@ function Dashboard() {
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
+    const handleLogout = () =>{
+        navigate('/');
+    };
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
+
     };
+
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
@@ -109,7 +114,7 @@ function Dashboard() {
                     <Box sx={{ flexGrow: 1 }} className="User">
 
                         <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu}  sx={{ position: 'fixed', top: -40, right: -150 }}>
+                            <IconButton onClick={handleOpenUserMenu}  sx={{ position: 'fixed', top: 5, right: 40 }}>
                                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
                             </IconButton>
                         </Tooltip>
@@ -130,7 +135,7 @@ function Dashboard() {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                <MenuItem key={setting} onClick={handleLogout}>
                                     <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                                 </MenuItem>
                             ))}
@@ -200,6 +205,7 @@ function Dashboard() {
 
                 </Box>
             </Drawer>
+
             <Box className="BoxInventory">
 
                 {showInventory && <Inventory data={inventoryData}/>}

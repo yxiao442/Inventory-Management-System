@@ -2,6 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -27,6 +28,12 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import './Sales.css'
 import Number from './Number'
+import {useState} from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 
 function createData(name, category, id,  price, totalValue) {
     return {
@@ -39,21 +46,7 @@ function createData(name, category, id,  price, totalValue) {
 }
 
 
-// const rows = [
-//     createData(1, 'Cupcake', 305,  67, 4.3),
-//     createData(2, 'Donut', 452,  51, 4.9),
-//     createData(3, 'Eclair', 262,  24, 6.0),
-//     createData(4, 'Frozen yoghurt', 159,  24, 4.0),
-//     createData(5, 'Gingerbread', 356,  49, 3.9),
-//     createData(6, 'Honeycomb', 408,  87, 6.5),
-//     createData(7, 'Ice cream sandwich', 237,  37, 4.3),
-//     createData(8, 'Jelly Bean', 375,  94, 0.0),
-//     createData(9, 'KitKat', 518,  65, 7.0),
-//     createData(10, 'Lollipop', 392,  98, 0.0),
-//     createData(11, 'Marshmallow', 318,  81, 2.0),
-//     createData(12, 'Nougat', 360,  9, 37.0),
-//     createData(13, 'Oreo', 437,  63, 4.0),
-// ];
+
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -110,6 +103,12 @@ const headCells = [
         disablePadding: false,
         label: 'Inventory Value($)',
     },
+    {
+        id: 'button',
+        numeric: true,
+        disablePadding: false,
+        // label: 'Inventory Value($)',
+    },
 ];
 
 function EnhancedTableHead(props) {
@@ -144,7 +143,7 @@ function EnhancedTableHead(props) {
     }
 
     return (
-        <TableHead>
+        <TableHead >
             <TableRow>
                 <TableCell padding="checkbox">
 
@@ -189,6 +188,7 @@ EnhancedTableHead.propTypes = {
 
 function EnhancedTableToolbar(props) {
     const { numSelected } = props;
+
     return (
         <Toolbar
             sx={[
@@ -202,16 +202,16 @@ function EnhancedTableToolbar(props) {
                 },
             ]}
         >
-            {numSelected > 0 ? (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {numSelected} selected
-                </Typography>
-            ) : (
+            {/*{numSelected > 0 ? (*/}
+            {/*    <Typography*/}
+            {/*        sx={{ flex: '1 1 100%' }}*/}
+            {/*        color="inherit"*/}
+            {/*        variant="subtitle1"*/}
+            {/*        component="div"*/}
+            {/*    >*/}
+            {/*        {numSelected} selected*/}
+            {/*    </Typography>*/}
+            {/*) : (*/}
                 <Typography
                     sx={{ flex: '1 1 100%' }}
                     variant="h6"
@@ -220,20 +220,20 @@ function EnhancedTableToolbar(props) {
                 >
                     Sales
                 </Typography>
-            )}
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
+            {/*)}*/}
+            {/*{numSelected > 0 ? (*/}
+            {/*    <Tooltip title="Delete">*/}
+            {/*        <IconButton>*/}
+            {/*            <DeleteIcon />*/}
+            {/*        </IconButton>*/}
+            {/*    </Tooltip>*/}
+            {/*) : (*/}
+            {/*    <Tooltip title="Filter list">*/}
+            {/*        <IconButton>*/}
+            {/*            <FilterListIcon />*/}
+            {/*        </IconButton>*/}
+            {/*    </Tooltip>*/}
+            {/*)}*/}
         </Toolbar>
     );
 }
@@ -249,7 +249,11 @@ export default function EnhancedTable({ data }) {
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+    const [dataFromChild, setDataFromChild] = useState("");
+    const [sales, setSales] = React.useState(false);
+    const [selectedRow, setSelectedRow] = React.useState(null);
+    // const quantityRef = useRef();
+    // console.log(quantityRef)
     const rows = React.useMemo(
         () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.price, (item.stock * item.price).toFixed(2))) : [],
         [data]
@@ -268,25 +272,38 @@ export default function EnhancedTable({ data }) {
         }
         setSelected([]);
     };
+    const handleCloseSales =()=>{
+      setSales(false);
+        setSelectedRow(null);
 
-    const handleClick = (event, id) => {
-        const selectedIndex = selected.indexOf(id);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-        setSelected(newSelected);
     };
+    function handleDataFromChild(data) {
+        setDataFromChild(data);
+    }
+    const handleOpenSales =(event,row)=>{
+        event.preventDefault();
+        setSelectedRow(row);
+        setSales(true);
+    };
+
+    // const handleClick = (event, id) => {
+    //     const selectedIndex = selected.indexOf(id);
+    //     let newSelected = [];
+    //
+    //     if (selectedIndex === -1) {
+    //         newSelected = newSelected.concat(selected, id);
+    //     } else if (selectedIndex === 0) {
+    //         newSelected = newSelected.concat(selected.slice(1));
+    //     } else if (selectedIndex === selected.length - 1) {
+    //         newSelected = newSelected.concat(selected.slice(0, -1));
+    //     } else if (selectedIndex > 0) {
+    //         newSelected = newSelected.concat(
+    //             selected.slice(0, selectedIndex),
+    //             selected.slice(selectedIndex + 1),
+    //         );
+    //     }
+    //     setSelected(newSelected);
+    // };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -300,6 +317,8 @@ export default function EnhancedTable({ data }) {
     const handleChangeDense = (event) => {
         setDense(event.target.checked);
     };
+
+
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
@@ -337,10 +356,11 @@ export default function EnhancedTable({ data }) {
                                 const isItemSelected = selected.includes(row.id);
                                 const labelId = `enhanced-table-checkbox-${index}`;
 
+
                                 return (
                                     <TableRow
-                                        hover
-                                        onClick={(event) => handleClick(event, row.id)}
+                                        // hover
+                                        // onClick={(event) => handleClick(event, row.id)}
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
@@ -361,15 +381,60 @@ export default function EnhancedTable({ data }) {
 
                                             {row.name}
                                         </TableCell>
+
                                         <TableCell align="left">{row.category}</TableCell>
                                         <TableCell align="left">{row.id}</TableCell>
-                                        <TableCell align="right"><Number/></TableCell>
+                                        <TableCell align="right"><Number sendDataToParent={handleDataFromChild}/></TableCell>
                                         <TableCell align="left">{row.price}</TableCell>
                                         <TableCell align="left">{row.totalValue}</TableCell>
+                                        <TableCell><Button variant="contained" onClick={(event) => handleOpenSales(event, row)}>Sales</Button></TableCell>
+                                        <Dialog open={sales}
+                                                onClose={handleCloseSales}
+                                                aria-labelledby="alert-dialog-title"
+                                                aria-describedby="alert-dialog-description"
+                                                maxWidth="sm"
+                                                fullWidth
+                                                keepMounted = {false}
+                                                PaperProps={{
+                                                    style:{
+                                                        height :'330px'
+                                                    },
+                                                }}
+                                                BackdropProps={{
+                                                    style: { backgroundColor: 'rgba(100, 100, 100, 100)' },
+                                                }}
+                                        >
+
+                                            <DialogTitle id="alert-dialog-title">
+                                                {"Sales"}
+                                            </DialogTitle>
+                                            <DialogContent>{selectedRow &&(
+                                                <form>
+                                                    <div>
+                                                        <h3 style={{ color: 'red' }}>Are you sure process this sales?</h3>
+                                               <h4>Product Name: {selectedRow.name}</h4>
+                                                <h4>Product Category: {selectedRow.category}</h4>
+                                                <h4>Product ID: {selectedRow.id}</h4>
+                                                <h4>Sales Quantity: {dataFromChild}</h4>
+                                                <h4>Total Price: ${(selectedRow.price * dataFromChild).toFixed(2)}</h4>
+                                                        <Button variant="contained">Complete Sales
+                                                            </Button>
+                                                    </div>
+                                                </form>
+                                                )
+                                            }
+                                            </DialogContent>
+                                        </Dialog>
+
 
 
                                     </TableRow>
-                                );
+
+
+
+                            );
+
+
                             })}
                             {emptyRows > 0 && (
                                 <TableRow
@@ -384,7 +449,7 @@ export default function EnhancedTable({ data }) {
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[5]}
                     component="div"
                     count={rows.length}
                     rowsPerPage={rowsPerPage}
@@ -393,10 +458,7 @@ export default function EnhancedTable({ data }) {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            <FormControlLabel
-                control={<Switch checked={dense} onChange={handleChangeDense} />}
-                label="Dense padding"
-            />
+
         </Box>
     );
 }

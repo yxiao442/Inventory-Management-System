@@ -310,10 +310,7 @@ const LoginForm = () => {
                         {"Reset Password"}
                     </DialogTitle>
                     <DialogContent>
-                        {/*<DialogContentText id="alert-dialog-description">*/}
-                        {/*    Let Google help apps determine location. This means sending anonymous*/}
-                        {/*    location data to Google, even when no apps are running.*/}
-                        {/*</DialogContentText>*/}
+
                         <form onSubmit={handleForget}>
                             <div>
                                 <input className="styled-input" type="text" placeholder="Username" value={forgetName} onChange={(e) => setForgetUsername(e.target.value)} required/>

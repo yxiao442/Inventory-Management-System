@@ -24,6 +24,16 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import './Inventory.css'
+import Button from "@mui/material/Button";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+
 function createData(name, category, id, quantity, price, totalValue,lowStock) {
     return {
         name,
@@ -188,16 +198,16 @@ function EnhancedTableToolbar(props) {
                 },
             ]}
         >
-            {numSelected > 0 ? (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {numSelected} selected
-                </Typography>
-            ) : (
+            {/*{numSelected > 0 ? (*/}
+            {/*    <Typography*/}
+            {/*        sx={{ flex: '1 1 100%' }}*/}
+            {/*        color="inherit"*/}
+            {/*        variant="subtitle1"*/}
+            {/*        component="div"*/}
+            {/*    >*/}
+            {/*        {numSelected} selected*/}
+            {/*    </Typography>*/}
+            {/*) : (*/}
                 <Typography
                     sx={{ flex: '1 1 100%' }}
                     variant="h6"
@@ -206,20 +216,20 @@ function EnhancedTableToolbar(props) {
                 >
                     Inventory
                 </Typography>
-            )}
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
+            {/*)}*/}
+            {/*{numSelected > 0 ? (*/}
+            {/*    <Tooltip title="Delete">*/}
+            {/*        <IconButton>*/}
+            {/*            <DeleteIcon />*/}
+            {/*        </IconButton>*/}
+            {/*    </Tooltip>*/}
+            {/*) : (*/}
+            {/*    <Tooltip title="Filter list">*/}
+            {/*        <IconButton>*/}
+            {/*            <FilterListIcon />*/}
+            {/*        </IconButton>*/}
+            {/*    </Tooltip>*/}
+            {/*)}*/}
         </Toolbar>
     );
 }
@@ -236,30 +246,17 @@ export default function EnhancedTable({ data }) {
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [visable,setVisable] = React.useState(false);
-    // useEffect(() => {
-    //
-    //     console.log('Received data:', data);
-    // }, [data]);
-    // const rows = data.map(item => createData(
-    //     item.productName,
-    //     item.category,
-    //     item.inventoryID,
-    //     item.stock,
-    //     item.price,
-    //     (item.stock*item.price).toFixed(2),
-    // ));
+    const [newInventory,setNewInventory] = React.useState(false);
+    const [newInventoryName, setNewInventoryName]=React.useState('');
+    const [newInventoryCategory, setNewInventoryCategory]=React.useState('');
+    const [newInventoryPrice, setNewInventoryPrice]=React.useState('');
+    const [createSuccess, setCreateSuccess]=React.useState('')
     const rows = React.useMemo(
 
         () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.stock, item.price, (item.stock * item.price).toFixed(2),item.lowStock === "Yes")) : [],
         [data]
     );
-    // useEffect(() => {
-    //     // Check if there’s any item with lowStock set to "yes"
-    //     const hasLowStock = data.some((item) => item.lowStock === "Yes");
-    //     console.log(hasLowStock);
-    //     setVisable(hasLowStock);
-    //
-    // }, [data]);
+
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -274,24 +271,67 @@ export default function EnhancedTable({ data }) {
         }
         setSelected([]);
     };
+    const handleNewInventory = (event) =>{
+        event.preventDefault();
+        setNewInventory(true);
 
-    const handleClick = (event, id) => {
-        const selectedIndex = selected.indexOf(id);
-        let newSelected = [];
+    };
+    const handleClose = () => {
 
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
+        setNewInventory(false);
+        setNewInventoryName('')
+        setNewInventoryCategory('')
+        setNewInventoryPrice('')
+
+    };
+    const handleChangeCategory = (event) => {
+        setNewInventoryCategory(event.target.value);
+    };
+
+    const handleCreate = async (e) => {
+        e.preventDefault();
+        let id='';
+        if(data.length<100){
+            id = 'IN0';
         }
-        setSelected(newSelected);
+        else{
+            id = 'IN1'
+        }
+        const productData = {
+            Product_Name:newInventoryName,
+            Product_Category:newInventoryCategory,
+            Product_Price:newInventoryPrice,
+            Product_ID:id + String(data.length + 1),
+        };
+        try {
+            const response = await fetch('http://localhost:18080/createProduct', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(productData),
+            });
+
+            const result = await response.json();
+
+            console.log('Response from backend:', result);
+
+            // Handle success or failure
+
+            if (response.ok) {
+                // Handle successful login (e.g., redirect, show a success message)
+                console.log('Create Product successful!');
+                setCreateSuccess("Create Product successful!")
+
+            } else {
+
+                setCreateSuccess('Item exist!');
+
+            }
+        } catch (error) {
+            console.error('Error during create user:', error);
+        }
+
     };
 
     const handleChangePage = (event, newPage) => {
@@ -347,8 +387,8 @@ export default function EnhancedTable({ data }) {
 
                                 return (
                                     <TableRow
-                                        hover
-                                        onClick={(event) => handleClick(event, row.id)}
+                                        // hover
+                                        // onClick={(event) => handleClick(event, row.id)}
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
@@ -390,7 +430,7 @@ export default function EnhancedTable({ data }) {
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[5,10, 25]}
+                    rowsPerPageOptions={[5]}
                     component="div"
                     count={rows.length}
                     rowsPerPage={rowsPerPage}
@@ -398,11 +438,61 @@ export default function EnhancedTable({ data }) {
                     onPageChange={handleChangePage}
                     // onRowsPerPageChange={handleChangeRowsPerPage}
                 />
+
             </Paper>
-            {/*<FormControlLabel*/}
-            {/*    control={<Switch checked={dense} onChange={handleChangeDense} />}*/}
-            {/*    label="Dense padding"*/}
-            {/*/>*/}
+            <Button variant="contained" onClick={handleNewInventory}>Create new product
+            </Button>
+            <Dialog open={newInventory}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    maxWidth="sm"
+                    fullWidth
+                    keepMounted = {false}
+                    PaperProps={{
+                        style:{
+                            height :'330px'
+                        },
+                    }}
+                    BackdropProps={{
+                        style: { backgroundColor: 'rgba(100, 100, 100, 100)' },
+                    }}
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Create New Product"}
+                </DialogTitle>
+                <DialogContent>
+
+                    <form onSubmit={handleCreate}>
+                        <div >
+                            <input className="styled-input" type="text" placeholder="Product Name" value={newInventoryName} onChange={(e) => setNewInventoryName(e.target.value)} required/>
+
+                        </div>
+                        <div >
+                            <input className="styled-input" type="text"  placeholder="Price" value={newInventoryPrice} onChange={(e) => setNewInventoryPrice(e.target.value)} required/>
+
+                        </div>
+                        <div >
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Product Cateogry</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={newInventoryCategory}
+                                    label="Type"
+                                    onChange={handleChangeCategory}
+                                >
+                                    <MenuItem value={"Fruit"}>Fruit</MenuItem>
+                                    <MenuItem value={"Food"}>Food</MenuItem>
+                                    <MenuItem value={"Drink"}>Drink</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
+                        <Button  type="submit">Create</Button>
+                        {createSuccess && <p style={{ color: 'red' }}>{createSuccess}</p>}
+                    </form>
+                </DialogContent>
+            </Dialog>
 
         </Box>
     );
