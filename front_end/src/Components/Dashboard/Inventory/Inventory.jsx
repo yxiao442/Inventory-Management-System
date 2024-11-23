@@ -251,6 +251,7 @@ export default function EnhancedTable({ data }) {
     const [newInventoryCategory, setNewInventoryCategory]=React.useState('');
     const [newInventoryPrice, setNewInventoryPrice]=React.useState('');
     const [createSuccess, setCreateSuccess]=React.useState('');
+
     const rows = React.useMemo(
 
         () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.stock, item.price, (item.stock * item.price).toFixed(2),item.lowStock === "Yes")) : [],
@@ -262,6 +263,15 @@ export default function EnhancedTable({ data }) {
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
+    const handleChange = (event) => {
+        const input = event.target.value;
+        // Only allow digits, and optionally a decimal point
+        if (/^\d*\.?\d*$/.test(input)) {
+            setNewInventoryPrice(input);
+        }
+    };
+
+
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
@@ -470,7 +480,7 @@ export default function EnhancedTable({ data }) {
 
                         </div>
                         <div >
-                            <input className="styled-input" type="text"  placeholder="Price" value={newInventoryPrice} onChange={(e) => setNewInventoryPrice(e.target.value)} required/>
+                            <input className="styled-input" type="text"  placeholder="Price"  value={newInventoryPrice} onChange={handleChange} required/>
 
                         </div>
                         <div >
