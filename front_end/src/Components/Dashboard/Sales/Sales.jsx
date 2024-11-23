@@ -296,10 +296,10 @@ export default function EnhancedTable({ data }) {
         }
         else {
             const salesData = {
-                Product_Name: selectedRow.name,
-                Product_Category: selectedRow.category,
-                Product_ID: selectedRow.id,
-                Sales_Amount: dataFromChild
+                Product_Name: String(selectedRow.name),
+                Product_Category: String(selectedRow.category),
+                Product_ID: String(selectedRow.id),
+                Sales_Amount: String(dataFromChild)
             };
 
 
