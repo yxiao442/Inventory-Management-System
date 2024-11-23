@@ -293,7 +293,10 @@ export default function EnhancedTable({ data }) {
         e.preventDefault();
         if(selectedRow.quantity ==='0'){
             setSalesSuccess('The item stock is 0, and not be sale');
+        } else if (selectedRow.quantity< dataFromChild) {
+            setSalesSuccess('The item does nota have enough stock');
         }
+
         else {
             const salesData = {
                 Product_Name: String(selectedRow.name),

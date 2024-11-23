@@ -302,10 +302,10 @@ export default function EnhancedTable({ data }) {
         e.preventDefault();
 
             const salesData = {
-                Product_Name: selectedRow.name,
-                Product_Category: selectedRow.category,
-                Product_ID: selectedRow.id,
-                Purchase_Amount: dataFromChild
+                Product_Name: String(selectedRow.name),
+                Product_Category: String(selectedRow.category),
+                Product_ID: String(selectedRow.id),
+                Purchase_Amount: String(dataFromChild)
             };
 
 
@@ -438,7 +438,7 @@ export default function EnhancedTable({ data }) {
                                                 {"Sales"}
                                             </DialogTitle>
                                             <DialogContent>{selectedRow &&(
-                                                <form >
+                                                <form onSubmit={handlePurchase} >
                                                     <div>
                                                         <h3 style={{ color: 'red' }}>Are you sure process this purchase?</h3>
                                                         <h4>Product Name: {selectedRow.name}</h4>
