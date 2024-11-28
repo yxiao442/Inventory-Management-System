@@ -251,11 +251,11 @@ export default function EnhancedTable({ data }) {
     const [newInventoryCategory, setNewInventoryCategory]=React.useState('');
     const [newInventoryPrice, setNewInventoryPrice]=React.useState('');
     const [createSuccess, setCreateSuccess]=React.useState('');
+    const [localData, setLocalData] =React.useState(data);
+    let rows = React.useMemo(
 
-    const rows = React.useMemo(
-
-        () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.stock, item.price, (item.stock * item.price).toFixed(2),item.lowStock === "Yes")) : [],
-        [data]
+        () => localData.length ? localData.map(item => createData(item.productName, item.category, item.inventoryID, item.stock, item.price, (item.stock * item.price).toFixed(2),item.lowStock === "Yes")) : [],
+        [localData]
     );
 
     const handleRequestSort = (event, property) => {
@@ -293,7 +293,24 @@ export default function EnhancedTable({ data }) {
         setNewInventoryCategory('');
         setNewInventoryPrice('')
         setCreateSuccess('');
+        reFetch();
 
+    };
+    useEffect(() => {
+        setLocalData(data);
+    }, [data]); // This will run whenever the `data` prop changes
+    const reFetch = async ()=>{
+        try {
+            const response = await fetch('http://localhost:18080/inventory');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const newData = await response.json();
+            setLocalData(newData);
+            // console.log('Response from backend:', data);
+        } catch (error) {
+            console.error('Error fetching inventory data:', error);
+        }
     };
     const handleChangeCategory = (event) => {
         setNewInventoryCategory(event.target.value);
@@ -454,7 +471,7 @@ export default function EnhancedTable({ data }) {
             <Button variant="contained" onClick={handleNewInventory}>Create new product
             </Button>
             <Dialog open={newInventory}
-                    onClose={handleClose}
+                    // onClose={handleClose}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                     maxWidth="sm"
@@ -500,6 +517,7 @@ export default function EnhancedTable({ data }) {
                             </FormControl>
                         </div>
                         <Button  type="submit">Create</Button>
+                        <Button onClick={handleClose}>Close</Button>
                         {createSuccess && <p style={{ color: 'red' }}>{createSuccess}</p>}
                     </form>
                 </DialogContent>

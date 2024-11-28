@@ -5,7 +5,7 @@
 #include <iostream>
 #include "food.h"
 #include "sqlite/sqlite3.h"
-
+#include <cmath>
 food::food(const std::string& productName, float price, const std::string&inventoryID)
         : productName(productName), price(price), inventoryID(inventoryID) {}
 
@@ -36,9 +36,9 @@ bool food::createItem() {
     sqlite3_bind_text(stmt, 2, "Food", -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 3, productName.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 4, 0);
-    sqlite3_bind_double(stmt, 5, price);
+    sqlite3_bind_double(stmt, 5, std::round(price * 100.0) / 100.0);
 
-    cout << price;
+
 
     // Execute SQL statement
     rc = sqlite3_step(stmt);

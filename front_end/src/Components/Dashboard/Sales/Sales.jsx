@@ -2,7 +2,6 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -28,7 +27,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import './Sales.css'
 import Number from './Number'
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -254,11 +253,13 @@ export default function EnhancedTable({ data }) {
     const [sales, setSales] = React.useState(false);
     const [selectedRow, setSelectedRow] = React.useState(null);
     const [saleSuccess, setSalesSuccess] = React.useState('');
+    const [localData, setLocalData] =React.useState(data);
+
     // const quantityRef = useRef();
     // console.log(quantityRef)
     const rows = React.useMemo(
-        () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID,item.stock ,item.price, (item.stock * item.price).toFixed(2))) : [],
-        [data]
+        () => localData.length ? localData.map(item => createData(item.productName, item.category, item.inventoryID,item.stock ,item.price, (item.stock * item.price).toFixed(2))) : [],
+        [localData]
     );
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -278,7 +279,7 @@ export default function EnhancedTable({ data }) {
       setSales(false);
       setSelectedRow(null);
       setSalesSuccess('')
-
+      reFetch()
     };
     function handleDataFromChild(data) {
         setDataFromChild(data);
@@ -288,13 +289,28 @@ export default function EnhancedTable({ data }) {
         setSelectedRow(row);
         setSales(true);
     };
-
+    useEffect(() => {
+        setLocalData(data);
+    }, [data]); // This will run whenever the `data` prop changes
+    const reFetch = async ()=>{
+        try {
+            const response = await fetch('http://localhost:18080/inventory');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const newData = await response.json();
+            setLocalData(newData);
+            // console.log('Response from backend:', data);
+        } catch (error) {
+            console.error('Error fetching inventory data:', error);
+        }
+    };
     const handleSales = async (e) => {
         e.preventDefault();
         if(selectedRow.quantity ==='0'){
             setSalesSuccess('The item stock is 0, and not be sale');
         } else if (selectedRow.quantity< dataFromChild) {
-            setSalesSuccess('The item does nota have enough stock');
+            setSalesSuccess('The item does not have enough stock');
         }
 
         else {
@@ -420,7 +436,6 @@ export default function EnhancedTable({ data }) {
                                         <TableCell align="left">{row.totalValue}</TableCell>
                                         <TableCell><Button variant="contained" onClick={(event) => handleOpenSales(event, row)}>Sales</Button></TableCell>
                                         <Dialog open={sales}
-                                                onClose={handleCloseSales}
                                                 aria-labelledby="alert-dialog-title"
                                                 aria-describedby="alert-dialog-description"
                                                 maxWidth="sm"
@@ -448,8 +463,11 @@ export default function EnhancedTable({ data }) {
                                                 <h4>Product ID: {selectedRow.id}</h4>
                                                 <h4>Sales Quantity: {dataFromChild}</h4>
                                                 <h4>Total Price: ${(selectedRow.price * dataFromChild).toFixed(2)}</h4>
-                                                        <Button variant="contained" type="submit">Complete Sales
+                                                        <Button  type="submit">Complete Sales
                                                             </Button>
+                                                        <Button onClick={handleCloseSales}>Close
+                                                        </Button>
+
                                                         {saleSuccess && <p style={{ color: 'red' }}>{saleSuccess}</p>}
                                                     </div>
                                                 </form>

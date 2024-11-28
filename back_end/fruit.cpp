@@ -6,6 +6,7 @@
 #include <iostream>
 #include "fruit.h"
 #include "sqlite/sqlite3.h"
+#include <cmath>
 
 fruit::fruit(const std::string& productName, float price, const std::string&inventoryID)
         : productName(productName), price(price), inventoryID(inventoryID) {}
@@ -37,7 +38,7 @@ bool fruit::createItem() {
     sqlite3_bind_text(stmt, 2, "Fruit", -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 3, productName.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 4, 0);
-    sqlite3_bind_double(stmt, 5, price);
+    sqlite3_bind_double(stmt, 5, std::round(price * 100.0) / 100.0);
 
     cout << price;
 

@@ -27,7 +27,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import './Purchase.css'
 import Number from './Number'
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -265,9 +265,11 @@ export default function EnhancedTable({ data }) {
     const [purchase, setPurchase] = React.useState(false);
     const [selectedRow, setSelectedRow] = React.useState(null);
     const [purchaseSuccess, setPurchaseSuccess] = React.useState('');
+    const [localData, setLocalData] =React.useState(data);
+
     const rows = React.useMemo(
-        () => data.length ? data.map(item => createData(item.productName, item.category, item.inventoryID, item.price, (item.stock * item.price).toFixed(2))) : [],
-        [data]
+        () => localData.length ? localData.map(item => createData(item.productName, item.category, item.inventoryID, item.price, (item.stock * item.price).toFixed(2))) : [],
+        [localData]
     );
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -287,6 +289,7 @@ export default function EnhancedTable({ data }) {
         setPurchase(false);
         setSelectedRow(null);
         setPurchaseSuccess('');
+        reFetch()
 
     };
     function handleDataFromChild(data) {
@@ -296,6 +299,23 @@ export default function EnhancedTable({ data }) {
         event.preventDefault();
         setSelectedRow(row);
         setPurchase(true);
+    };
+    useEffect(() => {
+        setLocalData(data);
+    }, [data]); // This will run whenever the `data` prop changes
+
+    const reFetch = async ()=>{
+        try {
+            const response = await fetch('http://localhost:18080/inventory');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const newData = await response.json();
+            setLocalData(newData);
+            // console.log('Response from backend:', data);
+        } catch (error) {
+            console.error('Error fetching inventory data:', error);
+        }
     };
 
     const handlePurchase = async (e) => {
@@ -418,7 +438,6 @@ export default function EnhancedTable({ data }) {
                                         <TableCell align="left">{row.totalValue}</TableCell>
                                         <TableCell><Button variant="contained" onClick={(event) => handleOpenPurchase(event, row)}>Purchase</Button></TableCell>
                                         <Dialog open={purchase}
-                                                onClose={handleClosePurchase}
                                                 aria-labelledby="alert-dialog-title"
                                                 aria-describedby="alert-dialog-description"
                                                 maxWidth="sm"
@@ -446,7 +465,9 @@ export default function EnhancedTable({ data }) {
                                                         <h4>Product ID: {selectedRow.id}</h4>
                                                         <h4>Purchase Quantity: {dataFromChild}</h4>
                                                         <h4>Total Price: ${(selectedRow.price * dataFromChild).toFixed(2)}</h4>
-                                                        <Button variant="contained" type="submit">Complete Purchase
+                                                        <Button  type="submit">Complete Purchase
+                                                        </Button>
+                                                        <Button onClick={handleClosePurchase} >Close
                                                         </Button>
                                                         {purchaseSuccess && <p style={{ color: 'red' }}>{purchaseSuccess}</p>}
 

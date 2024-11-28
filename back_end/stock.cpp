@@ -1,7 +1,7 @@
 //
 // Created by x9god on 2024-11-09.
 //
-#include "isStock.h"
+
 #include <iostream>
 #include <vector>
 #include <string>
