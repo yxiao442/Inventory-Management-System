@@ -1,6 +1,3 @@
-//
-// Created by Mattie Poon on 2024-11-09.
-//
 
 #ifndef FOOD_H
 #define FOOD_H
@@ -13,8 +10,7 @@ private:
     string inventoryID;
     string productName;
     float price;
-//    string category;
-//    int quantity;
+
 
 public:
     food(const std::string& productName, float price, const std::string&inventoryID);

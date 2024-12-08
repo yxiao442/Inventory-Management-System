@@ -1,6 +1,3 @@
-//
-// Created by Mattie Poon on 2024-11-23.
-//
 
 #ifndef BACK_END_DRINK_H
 #define BACK_END_DRINK_H
@@ -10,12 +7,12 @@
 using namespace std;
 
 class drink : public product{
-private:
+ private:
     string inventoryID;
     string productName;
     float price;
 
-public:
+ public:
     drink(const std::string& productName, float price, const std::string&inventoryID);
     bool createItem() override;
     bool addQuantity(int amount) override;

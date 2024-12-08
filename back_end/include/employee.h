@@ -9,10 +9,12 @@ using namespace std;
 class employee : public user {
 
   private:
-     string username;
-     string password;
-     string type;
+    string username;
+    string password;
+    string type;
+
   public:
+
      employee(string, string, string);
      bool vertifyLogin() override;
      bool changePassword() override;

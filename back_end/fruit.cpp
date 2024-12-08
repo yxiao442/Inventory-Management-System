@@ -1,16 +1,14 @@
-//
-// Created by Mattie Poon on 2024-11-23.
-//
 
 
 #include <iostream>
 #include "fruit.h"
 #include "sqlite/sqlite3.h"
 #include <cmath>
-
+//Constructor for object Fruit
 fruit::fruit(const std::string& productName, float price, const std::string&inventoryID)
         : productName(productName), price(price), inventoryID(inventoryID) {}
 
+//createItem method to create a fruit object in DBMS
 bool fruit::createItem() {
     std::cout << "Generating fruit item: " << productName << std::endl;
 
@@ -57,9 +55,12 @@ bool fruit::createItem() {
     std::cout << "Create new fruit item successfully.\n";
     return true;
 }
-
+//Add the fruit quantity in DBMS
 bool fruit::addQuantity(int amount) {
-
+    if(amount <0) {
+        std::cout << "The amount should be positive.\n";
+        return false;
+    }
     sqlite3* db;
     char* errMessage = nullptr;
 
@@ -107,9 +108,9 @@ bool fruit::addQuantity(int amount) {
         sqlite3_close(db);
         return true;
     }
-
 }
 
+//Delete the fruit quantity in DBMS
 bool fruit::deleteQuantity(int amount) {
 
     sqlite3* db;

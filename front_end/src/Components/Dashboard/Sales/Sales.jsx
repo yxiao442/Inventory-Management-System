@@ -318,7 +318,8 @@ export default function EnhancedTable({ data }) {
                 Product_Name: String(selectedRow.name),
                 Product_Category: String(selectedRow.category),
                 Product_ID: String(selectedRow.id),
-                Sales_Amount: String(dataFromChild)
+                Sales_Amount: String(dataFromChild),
+                Sales_Value:String(dataFromChild*selectedRow.price)
             };
 
 

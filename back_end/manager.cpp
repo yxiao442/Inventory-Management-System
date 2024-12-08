@@ -1,6 +1,4 @@
-//
-// Created by x9god on 2024-10-19.
-//
+
 #include <iostream>
 #include "manager.h"
 #include <string>
@@ -8,6 +6,8 @@
 
 using namespace std;
 
+
+//Constructor for manager object
 manager::manager(string username, string password, string type) {
     this->username = username;
     this->password = password;
@@ -16,7 +16,7 @@ manager::manager(string username, string password, string type) {
 
 
 
-
+//vertifyLogin method to check if the login info is correct in DBMS or not
 bool manager::vertifyLogin() {
     sqlite3 *DB;
     int exit = sqlite3_open("../project.db", &DB);
@@ -46,6 +46,7 @@ bool manager::vertifyLogin() {
     }
 
 }
+//Method to create a Manager object
 bool manager::createManager() {
     sqlite3 *DB;
     int exit = sqlite3_open("../project.db", &DB);
@@ -77,6 +78,8 @@ bool manager::createManager() {
     std::cout << "Create User successfully.\n";
     return true;
 }
+
+//Method to change the password
 bool manager::changePassword() {
     sqlite3 *DB;
     int exit = sqlite3_open("../project.db", &DB);

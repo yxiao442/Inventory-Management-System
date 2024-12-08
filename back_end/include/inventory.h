@@ -1,6 +1,3 @@
-//
-// Created by x9god on 2024-10-29.
-//
 
 #ifndef INVENTORY_H
 #define INVENTORY_H
@@ -21,4 +18,4 @@ public:
     std::vector<std::vector<std::string> > getInventory();
 };
 
-#endif //INVENTORY_H
+#endif

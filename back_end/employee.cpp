@@ -1,6 +1,4 @@
-//
-// Created by x9god on 2024-10-19.
-//
+
 #include <iostream>
 #include "employee.h"
 #include <string>
@@ -8,6 +6,7 @@
 
 using namespace std;
 
+//Constructor for employee object
 employee::employee(string username, string password, string type) {
     this->username = username;
     this->password = password;
@@ -17,6 +16,8 @@ employee::employee(string username, string password, string type) {
 
 
 
+
+//vertifyLogin method to check if the login info is correct in DBMS or not
 bool employee::vertifyLogin() {
     sqlite3 *DB;
     int exit = sqlite3_open("../project.db", &DB);
@@ -46,6 +47,7 @@ bool employee::vertifyLogin() {
     }
 }
 
+//Method to create a Employee object
 bool employee::createEmployee() {
     sqlite3 *DB;
     int exit = sqlite3_open("../project.db", &DB);
@@ -79,6 +81,8 @@ bool employee::createEmployee() {
 
 
 }
+
+//Method to change the password
 bool employee::changePassword() {
     sqlite3 *DB;
     int exit = sqlite3_open("../project.db", &DB);

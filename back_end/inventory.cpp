@@ -10,10 +10,13 @@ using namespace std;
 std::vector<std::vector<std::string> > result;
 inventory *inventory::instance = nullptr;
 
+
+//Consturctor for inventory object
 inventory::inventory() {
     std::cout << "get inventory" << std::endl;
 }
 
+//Singlton pattern to return a instance of inventory
 inventory *inventory::getInstance() {
     if (instance == nullptr) {
         instance = new inventory();
@@ -32,7 +35,7 @@ int callback(void *data, int argc, char **argv, char **azColName) {
     return 0;
 }
 
-
+//getInventory method to return the list of inventory
 std::vector<std::vector<std::string> > inventory::getInventory() {
     sqlite3 *DB;
     char *errorMessage = nullptr;

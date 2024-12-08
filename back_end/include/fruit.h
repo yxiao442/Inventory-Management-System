@@ -1,6 +1,3 @@
-//
-// Created by Mattie Poon on 2024-11-23.
-//
 
 #ifndef BACK_END_FRUIT_H
 #define BACK_END_FRUIT_H

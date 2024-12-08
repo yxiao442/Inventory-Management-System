@@ -13,7 +13,10 @@
 #include "foodFactory.h"
 #include "fruitFactory.h"
 #include "drinkFactory.h"
-
+#include "report.h"
+#include <chrono>
+#include <iomanip> // For std::put_time
+#include <ctime>   // For std::localtime
 using namespace std;
 
 
@@ -165,7 +168,7 @@ int main() {
         return res;
     });
 
-
+    //Endpoint to listen POST to create a new product
     CROW_ROUTE(app,"/createProduct").methods("POST"_method)([](const crow::request &req){
         auto body = crow::json::load(req.body);
         auto productName = body["Product_Name"].s();
@@ -205,15 +208,23 @@ int main() {
 
     });
 
-
+   //Endpoint to listern a POST to update the inventory(Sales)
     CROW_ROUTE(app,"/salesProduct").methods("POST"_method)([](const crow::request &req){
         auto body = crow::json::load(req.body);
         auto productName = body["Product_Name"].s();
         auto category = body["Product_Category"].s();
         auto amount_str = body["Sales_Amount"].s();
         int amount = std::stoi(amount_str);
+        auto value_str = body["Sales_Value"].s();
+        float value = std::stof(value_str);
         auto productID = body["Product_ID"].s();
-
+        auto now = std::chrono::system_clock::now();
+        std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+        std::ostringstream oss;
+        oss << std::put_time(std::localtime(&currentTime), "%Y-%m-%d");
+        std::string formattedDate = oss.str();
+        report newSales(productName,amount,"Sales",value,formattedDate);
+        newSales.insertIntoRpeort();
         productFactory* factory = nullptr;
 
         if(category == "Food") {
@@ -245,15 +256,23 @@ int main() {
 
     });
 
-
+    //Endpoint to listern a POST to update the inventory(Purchase)
     CROW_ROUTE(app,"/purchaseProduct").methods("POST"_method)([](const crow::request &req){
         auto body = crow::json::load(req.body);
         auto productName = body["Product_Name"].s();
         auto category = body["Product_Category"].s();
         auto amount_str = body["Purchase_Amount"].s();
         int amount = std::stoi(amount_str);
+        auto value_str = body["Purchase_Value"].s();
+       float value = std::stof(value_str);
         auto productID = body["Product_ID"].s();
-
+        auto now = std::chrono::system_clock::now();
+       std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+       std::ostringstream oss;
+       oss << std::put_time(std::localtime(&currentTime), "%Y-%m-%d");
+       std::string formattedDate = oss.str();
+       report newPurchase(productName,amount,"Purchase",value,formattedDate);
+       newPurchase.insertIntoRpeort();
         productFactory* factory = nullptr;
 
         if(category == "Food") {
@@ -282,7 +301,34 @@ int main() {
         }
 
     });
+    //Endpoint to listern a GET to generate the report
+    CROW_ROUTE(app,"/getReport").methods("POST"_method)([](const crow::request &req) {
+        auto body = crow::json::load(req.body);
+        auto startDay = body["Start_Day"].s();
+        auto endDay = body["End_Day"].s();
+        report newReport(startDay, endDay);
+        std::vector<report> reportResult=newReport.getReport();
+        crow::json::wvalue jsonData;
+        std::vector<crow::json::wvalue> vector_of_wvalue;
+        for (size_t i = 0; i < reportResult.size(); ++i) {
+            crow::json::wvalue product;
+            product["Product_Name"] = reportResult[i].productName;
+            product["Quantity"] = reportResult[i].quantity;
+            product["Type"] = reportResult[i].type;
+            product["Value"] = reportResult[i].value;
+            product["Date"]= reportResult[i].startDay;
+            vector_of_wvalue.push_back(product);
 
+        }
+        jsonData = crow::json::wvalue::list(vector_of_wvalue);
+        std::cout << jsonData.dump() << std::endl;
+       crow::response res(200, jsonData);
+       vector_of_wvalue.clear();
+       return res;
+
+
+
+    });
 
     app.port(18080).multithreaded().run();
 

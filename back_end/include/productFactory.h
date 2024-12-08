@@ -1,6 +1,3 @@
-//
-// Created by Mattie Poon on 2024-11-09.
-//
 
 #ifndef PRODUCT_FACTORY_H
 #define PRODUCT_FACTORY_H

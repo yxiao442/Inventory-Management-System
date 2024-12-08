@@ -1,6 +1,3 @@
-//
-// Created by x9god on 2024-11-09.
-//
 
 #ifndef DASHBOARDDISPLAY_H
 #define DASHBOARDDISPLAY_H
@@ -22,4 +19,4 @@ public:
 };
 
 
-#endif //DASHBOARDDISPLAY_H
+#endif

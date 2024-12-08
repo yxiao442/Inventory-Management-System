@@ -1,6 +1,3 @@
-//
-// Created by x9god on 2024-11-09.
-//
 
 #ifndef ISSTOCK_H
 #define ISSTOCK_H
@@ -10,7 +7,13 @@
 using namespace std;
 
 class isStock {
+private:
+    std::string productName;
+    int stock;
+    std::vector<Observer *> observers;
+
 public:
+
     virtual void addObserver(Observer *observer) =0;
 
     virtual void clearObserver() =0;
@@ -21,4 +24,4 @@ public:
 };
 
 
-#endif //ISSTOCK_H
+#endif

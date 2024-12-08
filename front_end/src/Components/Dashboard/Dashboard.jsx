@@ -23,6 +23,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import  Inventory from './Inventory/Inventory.jsx';
 import  Sales from './Sales/Sales.jsx';
 import  Purchase from './Purchase/Purchase.jsx';
+import  Report from './Report/report.jsx'
 import './Dashboard.css'
 import { MdInventory } from "react-icons/md";
 import { FaShoppingCart } from "react-icons/fa";
@@ -39,6 +40,7 @@ function Dashboard() {
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [showInventory, setShowInventory] = useState(false);
     const [showSales, setShowSales] = useState(false);
+    const [showReport,setReport]=useState(false)
     const [showPurchase, setShowPurchase] = useState(false);
     const [inventoryData, setInventoryData] = useState([]);
     const [purchaseVisible,setVisible] = useState(false);
@@ -70,12 +72,14 @@ function Dashboard() {
         setShowInventory(true);
         setShowSales(false);
         setShowPurchase(false);
+        setReport(false);
         window.history.pushState({}, '', '/dashboard/inventory');
     };
     const handleSales = () => {
         setShowSales(true);
         setShowInventory(false);
         setShowPurchase(false);
+        setReport(false);
         window.history.pushState({}, '', '/dashboard/sales');
 
 
@@ -85,7 +89,16 @@ function Dashboard() {
         setShowPurchase(true);
         setShowInventory(false);
         setShowSales(false);
+        setReport(false);
         window.history.pushState({}, '', '/dashboard/purchases');
+    };
+    const handleReport = () =>{
+        setReport(true)
+        setShowPurchase(false);
+        setShowInventory(false);
+        setShowSales(false);
+        window.history.pushState({}, '', '/dashboard/report');
+
     };
     const getInventory = async (e)=>{
         try {
@@ -193,7 +206,10 @@ function Dashboard() {
 
                         </ListItem>)}
                         <ListItem key="Reports" disablePadding>
-                            <ListItemButton>
+                            <ListItemButton onClick={() =>{
+                                handleReport();
+
+                            }}>
                                 <ListItemIcon>
                                     <FaChartBar  size={30}/>
                                 </ListItemIcon>
@@ -219,7 +235,10 @@ function Dashboard() {
                 {showPurchase && <Purchase data={inventoryData}/>}
 
             </Box>
+            <Box className="BoxReport">
+                {showReport && <Report/>}
 
+            </Box>
 
         </Box>
 

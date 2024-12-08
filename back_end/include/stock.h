@@ -1,6 +1,4 @@
-//
-// Created by x9god on 2024-11-09.
-//
+
 
 #ifndef STOCK_H
 #define STOCK_H
@@ -27,4 +25,4 @@ public:
 };
 
 
-#endif //STOCK_H
+#endif

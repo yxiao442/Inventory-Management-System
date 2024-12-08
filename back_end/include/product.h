@@ -15,9 +15,11 @@ private:
     string inventoryID;
     string productName;
     float price;
-//    string category;
+
+
 
 public:
+
     virtual bool createItem() = 0;
     virtual bool addQuantity(int amount) = 0;
     virtual bool deleteQuantity(int amount) = 0;
@@ -28,18 +30,4 @@ public:
 
 
 
-//class drink : public product{
-//public:
-//    void generateItem() override{
-//
-//    }
-//};
-//
-//class fruit : public product{
-//public:
-//    void generateItem() override{
-//
-//    }
-//};
 
-//BACK_END_PRODUCT_H

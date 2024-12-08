@@ -12,10 +12,11 @@ private:
     string password;
     string type;
 public:
+
     manager(string, string, string);
     bool vertifyLogin() override;
     bool changePassword() override;
     bool createManager();
 };
 
-#endif //MANAGER_H
+#endif

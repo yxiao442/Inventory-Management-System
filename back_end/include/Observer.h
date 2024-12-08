@@ -1,6 +1,4 @@
-//
-// Created by x9god on 2024-11-09.
-//
+
 
 #ifndef OBSERVER_H
 #define OBSERVER_H

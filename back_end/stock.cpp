@@ -1,6 +1,3 @@
-//
-// Created by x9god on 2024-11-09.
-//
 
 #include <iostream>
 #include <vector>
@@ -8,6 +5,9 @@
 #include "Observer.h"
 #include "stock.h"
 using namespace std;
+
+//Subject of the Observer pattern
+
 
 Stock::Stock(const std::string &name, int stock): productName(name), stock(stock) {
 }
@@ -24,4 +24,6 @@ bool Stock::notifyObservers() {
     for (Observer *observer: observers) {
        return observer->update(productName, stock);
     }
+    return false;
+
 }
