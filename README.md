@@ -91,6 +91,26 @@ Login page
 
 ![Alt Text](/image/Login.png)
 
+Inventory 
+
+![Alt Text](/image/Inventory.png)
+
+Sales
+
+![Alt Text](/image/Sales.png)
+
+Purchase
+
+![Alt Text](/image/Purchase.png)
+
+Generate Report
+
+![Alt Text](/image/Generate%20Report.png)
+
+Report
+
+![Alt Text](/image/Report.png)
+
 
 
 
