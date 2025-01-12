@@ -1,0 +1,3 @@
+C:/UWO/3307/webDesign/back_end/cmake-build-release/CMakeFiles/back_end.dir
+C:/UWO/3307/webDesign/back_end/cmake-build-release/CMakeFiles/edit_cache.dir
+C:/UWO/3307/webDesign/back_end/cmake-build-release/CMakeFiles/rebuild_cache.dir
